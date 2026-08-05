@@ -52,7 +52,18 @@ export function generateMessengerOrderLink(
     .map((item) => `• ${item.name} x${item.quantity} - ${formatPrice(item.price * item.quantity)}`)
     .join('\n');
 
-  const message = `Hi Goods On Demand! I'd like to place an order:\n\n${itemLines}\n\nTotal: ${formatPrice(total)}\n\nName: ${customerName}\n\nI've already sent payment via the QR code. Please confirm. Thank you!`;
+  const message = `Hi Goods On Demand! I'd like to place an order:
+
+ORDER DETAILS:
+${itemLines}
+
+Total Amount: ${formatPrice(total)}
+
+Customer: ${customerName}
+
+Payment: Sent via BPI InstaPay (screenshot attached below)
+
+Please confirm my order. Thank you!`;
 
   return `${MESSENGER_LINK}?text=${encodeURIComponent(message)}`;
 }

@@ -125,8 +125,8 @@ export default function CheckoutPage() {
             <div className="checkout-section">
               <h2>Send Your Order</h2>
               <p className="section-desc">
-                Click the button below to send your order details to our Messenger. 
-                We'll confirm your payment and process your order!
+                Click the button below to open Messenger with your order details pre-filled. 
+                Just <strong>attach your payment screenshot</strong> and send — we'll confirm and process your order!
               </p>
 
               <div className="order-preview">
