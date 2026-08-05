@@ -70,9 +70,9 @@ export default function CheckoutPage() {
     // 4. Show confirmation then open Messenger
     setStep('done');
 
-    // Open Messenger to the page (without text param since it doesn't work)
+    // Open Messenger - use facebook.com/messages link which works on desktop and mobile
     setTimeout(() => {
-      window.open('https://m.me/100063829217498', '_blank');
+      window.open('https://www.facebook.com/messages/t/100063829217498', '_blank');
     }, 1500);
 
     // 5. Clear cart
