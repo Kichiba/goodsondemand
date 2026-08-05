@@ -1417,3 +1417,28 @@ body {
   80% { opacity: 1; }
   100% { opacity: 0; transform: translate(-50%, -70%) scale(0.9); }
 }
+
+
+/* ============================
+   Stock Label on Product Card
+   ============================ */
+.product-stock-info {
+  margin-bottom: 0.5rem;
+}
+
+.stock-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.2rem 0.5rem;
+  border-radius: 100px;
+}
+
+.stock-label.in {
+  color: #16a34a;
+  background: #dcfce7;
+}
+
+.stock-label.out {
+  color: #dc2626;
+  background: #fee2e2;
+}

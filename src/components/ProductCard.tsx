@@ -111,6 +111,13 @@ export default function ProductCard({ product }: ProductCardProps) {
           <h3 className="product-name">{product.name}</h3>
         </Link>
         <p className="product-description">{product.description}</p>
+        <div className="product-stock-info">
+          {isOutOfStock ? (
+            <span className="stock-label out">Out of Stock</span>
+          ) : (
+            <span className="stock-label in">{product.stock} in stock</span>
+          )}
+        </div>
         <div className="product-footer">
           <span className="product-price">{formatPrice(product.price)}</span>
           <button
