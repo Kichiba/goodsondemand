@@ -9,7 +9,7 @@ export default function CheckoutPage() {
   const { items, totalAmount, clearCart } = useCart();
   const [customerName, setCustomerName] = useState('');
   const [customerContact, setCustomerContact] = useState('');
-  const [step, setStep] = useState<'info' | 'payment' | 'send'>('info');
+  const [step, setStep] = useState<'info' | 'payment' | 'send' | 'done'>('info');
 
   if (items.length === 0) {
     return (
@@ -47,21 +47,35 @@ export default function CheckoutPage() {
       console.error('Failed to save order:', err);
     }
 
-    // 2. Open Messenger with pre-filled message
-    const messengerLink = generateMessengerOrderLink(
-      customerName,
-      customerContact,
-      items.map((item) => ({
-        name: item.productName,
-        quantity: item.quantity,
-        price: item.price,
-      })),
-      totalAmount
-    );
+    // 2. Build the order message
+    const itemLines = items
+      .map((item) => `• ${item.productName} x${item.quantity} - ${formatPrice(item.price * item.quantity)}`)
+      .join('\n');
 
-    window.open(messengerLink, '_blank');
+    const message = `Hi Goods On Demand! I'd like to place an order:\n\nORDER DETAILS:\n${itemLines}\n\nTotal Amount: ${formatPrice(totalAmount)}\n\nCustomer: ${customerName}\nContact #: ${customerContact}\n\nPayment: Sent via BPI InstaPay (screenshot attached below)\n\nPlease confirm my order. Thank you!`;
 
-    // 3. Clear cart
+    // 3. Copy message to clipboard
+    try {
+      await navigator.clipboard.writeText(message);
+    } catch {
+      // Fallback for older browsers
+      const textarea = document.createElement('textarea');
+      textarea.value = message;
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textarea);
+    }
+
+    // 4. Show confirmation then open Messenger
+    setStep('done');
+
+    // Open Messenger to the page (without text param since it doesn't work)
+    setTimeout(() => {
+      window.open('https://m.me/100063829217498', '_blank');
+    }, 1500);
+
+    // 5. Clear cart
     clearCart();
   };
 
@@ -161,8 +175,8 @@ export default function CheckoutPage() {
             <div className="checkout-section">
               <h2>Send Your Order</h2>
               <p className="section-desc">
-                Click the button below to open Messenger with your order details pre-filled. 
-                Just <strong>attach your payment screenshot</strong> and send — we'll confirm and process your order!
+                Click the button below — your order message will be <strong>copied to your clipboard</strong>, then Messenger will open. 
+                Just <strong>paste the message</strong> and <strong>attach your payment screenshot</strong>!
               </p>
 
               <div className="order-preview">
@@ -187,9 +201,27 @@ export default function CheckoutPage() {
                   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M12 2C6.36 2 2 6.13 2 11.7c0 2.91 1.2 5.42 3.15 7.2v3.07l2.93-1.61c.83.23 1.71.35 2.62.35h.3c5.64 0 10-4.13 10-9.7C21 6.13 17.64 2 12 2z"/>
                   </svg>
-                  Send Order via Messenger
+                  Copy Order & Open Messenger
                 </button>
               </div>
+            </div>
+          )}
+
+          {/* Step 4: Done confirmation */}
+          {step === 'done' && (
+            <div className="checkout-section" style={{ textAlign: 'center' }}>
+              <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>&#10003;</div>
+              <h2>Order Message Copied!</h2>
+              <p className="section-desc">
+                Messenger is opening. Just <strong>paste</strong> the message (long press → Paste) 
+                and <strong>attach your payment screenshot</strong>. We'll confirm your order shortly!
+              </p>
+              <div style={{ marginTop: '1.5rem', padding: '1rem', background: '#f1f5f9', borderRadius: '8px', textAlign: 'left', fontSize: '0.8rem', color: '#64748b' }}>
+                <strong>Didn't open?</strong> Go to Messenger and search for "Goods On Demand", then paste the copied message.
+              </div>
+              <Link to="/" className="continue-shopping-btn" style={{ marginTop: '2rem', display: 'inline-block' }}>
+                Back to Home
+              </Link>
             </div>
           )}
         </div>
