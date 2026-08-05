@@ -7,7 +7,7 @@ export default function HomePage() {
       {/* Hero Section */}
       <section className="hero">
         <div className="hero-content">
-          <h1 className="hero-title">Goods On Demand</h1>
+          <img src="./logo.png" alt="Goods On Demand" className="hero-logo" />
           <p className="hero-subtitle">
             Branded and authentic bags, wallets, belts, clothes, perfumes & more — shipped from Marikina City. Order easily via Messenger.
           </p>

@@ -67,22 +67,12 @@ body {
 .navbar-brand {
   text-decoration: none;
   display: flex;
-  flex-direction: column;
+  align-items: center;
 }
 
-.brand-name {
-  font-size: 1.25rem;
-  font-weight: 900;
-  color: var(--text);
-  letter-spacing: -0.02em;
-}
-
-.brand-tagline {
-  font-size: 0.65rem;
-  font-weight: 700;
-  color: var(--primary);
-  text-transform: uppercase;
-  letter-spacing: 0.15em;
+.brand-logo {
+  height: 45px;
+  width: auto;
 }
 
 .navbar-links {
@@ -142,6 +132,12 @@ body {
   font-weight: 900;
   margin-bottom: 1rem;
   letter-spacing: -0.02em;
+}
+
+.hero-logo {
+  max-width: 280px;
+  height: auto;
+  margin-bottom: 1.5rem;
 }
 
 .hero-subtitle {

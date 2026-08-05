@@ -8,8 +8,7 @@ export default function Navbar() {
     <nav className="navbar">
       <div className="navbar-inner">
         <Link to="/" className="navbar-brand">
-          <span className="brand-name">GOODS ON DEMAND</span>
-          <span className="brand-tagline">Branded & Authentic</span>
+          <img src="./logo.png" alt="Goods On Demand" className="brand-logo" />
         </Link>
 
         <div className="navbar-links">
