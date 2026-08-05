@@ -52,15 +52,15 @@ export default function CheckoutPage() {
       .map((item) => `• ${item.productName} x${item.quantity} - ${formatPrice(item.price * item.quantity)}`)
       .join('\n');
 
-    const message = `Hi Goods On Demand! I'd like to place an order:\n\nORDER DETAILS:\n${itemLines}\n\nTotal Amount: ${formatPrice(totalAmount)}\n\nCustomer: ${customerName}\nContact #: ${customerContact}\n\nPayment: Sent via BPI InstaPay (screenshot attached below)\n\nPlease confirm my order. Thank you!`;
+    const orderMessage = `Hi Goods On Demand! I'd like to place an order:\n\nORDER DETAILS:\n${itemLines}\n\nTotal Amount: ${formatPrice(totalAmount)}\n\nCustomer: ${customerName}\nContact #: ${customerContact}\n\nPayment: Sent via BPI InstaPay (screenshot attached below)\n\nPlease confirm my order. Thank you!`;
 
     // 3. Copy message to clipboard
     try {
-      await navigator.clipboard.writeText(message);
+      await navigator.clipboard.writeText(orderMessage);
     } catch {
       // Fallback for older browsers
       const textarea = document.createElement('textarea');
-      textarea.value = message;
+      textarea.value = orderMessage;
       document.body.appendChild(textarea);
       textarea.select();
       document.execCommand('copy');
@@ -70,9 +70,21 @@ export default function CheckoutPage() {
     // 4. Show confirmation then open Messenger
     setStep('done');
 
-    // Open Messenger - use facebook.com/messages link which works on desktop and mobile
+    // Open Messenger - try multiple approaches for best compatibility
     setTimeout(() => {
-      window.open('https://www.facebook.com/messages/t/100063829217498', '_blank');
+      const message = encodeURIComponent(orderMessage);
+      // fb-messenger link works on mobile apps
+      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+      if (isMobile) {
+        // On mobile, fb-messenger:// deep link or m.me with ref works better
+        window.location.href = `fb-messenger://share?link=&app_id=&text=${message}`;
+        // Fallback after 2 seconds if deep link didn't work
+        setTimeout(() => {
+          window.open(`https://m.me/100063829217498`, '_blank');
+        }, 2000);
+      } else {
+        window.open('https://www.facebook.com/messages/t/100063829217498', '_blank');
+      }
     }, 1500);
 
     // 5. Clear cart
