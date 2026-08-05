@@ -11,6 +11,7 @@ interface ProductCardProps {
 export default function ProductCard({ product }: ProductCardProps) {
   const { addItem, getItemQuantity } = useCart();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [addedAnimation, setAddedAnimation] = useState(false);
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -22,6 +23,10 @@ export default function ProductCard({ product }: ProductCardProps) {
       quantity: 1,
       image: product.images[0] || undefined,
     }, product.stock);
+
+    // Trigger animation
+    setAddedAnimation(true);
+    setTimeout(() => setAddedAnimation(false), 1200);
   };
 
   const isOutOfStock = product.stock <= 0;
@@ -47,7 +52,15 @@ export default function ProductCard({ product }: ProductCardProps) {
   };
 
   return (
-    <div className="product-card">
+    <div className={`product-card ${addedAnimation ? 'card-added' : ''}`}>
+      {addedAnimation && (
+        <div className="added-toast">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+          Added!
+        </div>
+      )}
       <Link
         to={`/product/${product.id}`}
         className="product-image-wrapper"
