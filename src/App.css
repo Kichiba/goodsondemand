@@ -353,12 +353,19 @@ body {
   aspect-ratio: 1;
   overflow: hidden;
   background: #f1f5f9;
+  display: block;
+  text-decoration: none;
 }
 
 .product-image {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition: transform 0.3s;
+}
+
+.product-card:hover .product-image {
+  transform: scale(1.05);
 }
 
 .product-image-placeholder {
@@ -368,6 +375,27 @@ body {
   align-items: center;
   justify-content: center;
   color: #cbd5e1;
+}
+
+.image-dots {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 4px;
+}
+
+.image-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.5);
+  transition: background 0.2s;
+}
+
+.image-dot.active {
+  background: white;
 }
 
 .out-of-stock-badge {

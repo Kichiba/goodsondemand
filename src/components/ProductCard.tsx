@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { formatPrice } from '@shared/constants';
@@ -9,8 +10,11 @@ interface ProductCardProps {
 
 export default function ProductCard({ product }: ProductCardProps) {
   const { addItem } = useCart();
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
-  const handleAddToCart = () => {
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
     addItem({
       productId: product.id,
       productName: product.name,
@@ -21,11 +25,41 @@ export default function ProductCard({ product }: ProductCardProps) {
   };
 
   const isOutOfStock = product.stock <= 0;
+  const hasMultipleImages = product.images.length > 1;
+
+  // Handle hover zones for image switching
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!hasMultipleImages) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const segmentWidth = rect.width / product.images.length;
+    const index = Math.min(
+      Math.floor(x / segmentWidth),
+      product.images.length - 1
+    );
+    setCurrentImageIndex(index);
+  };
+
+  const handleMouseLeave = () => {
+    setCurrentImageIndex(0);
+  };
 
   return (
     <div className="product-card">
-      <Link to={`/product/${product.id}`} className="product-image-wrapper">
-        {product.images[0] ? (
+      <Link
+        to={`/product/${product.id}`}
+        className="product-image-wrapper"
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+      >
+        {product.images[currentImageIndex] ? (
+          <img
+            src={product.images[currentImageIndex]}
+            alt={product.name}
+            className="product-image"
+            loading="lazy"
+          />
+        ) : product.images[0] ? (
           <img
             src={product.images[0]}
             alt={product.name}
@@ -43,6 +77,18 @@ export default function ProductCard({ product }: ProductCardProps) {
         )}
         {isOutOfStock && <div className="out-of-stock-badge">Sold Out</div>}
         <div className="product-category-badge">{product.category}</div>
+
+        {/* Image dots indicator */}
+        {hasMultipleImages && (
+          <div className="image-dots">
+            {product.images.map((_, idx) => (
+              <span
+                key={idx}
+                className={`image-dot ${idx === currentImageIndex ? 'active' : ''}`}
+              />
+            ))}
+          </div>
+        )}
       </Link>
 
       <div className="product-info">
