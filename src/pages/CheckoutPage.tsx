@@ -211,13 +211,23 @@ export default function CheckoutPage() {
           {step === 'done' && (
             <div className="checkout-section" style={{ textAlign: 'center' }}>
               <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>&#10003;</div>
-              <h2>Order Message Copied!</h2>
+              <h2>Order Submitted!</h2>
               <p className="section-desc">
-                Messenger is opening. Just <strong>paste</strong> the message (long press → Paste) 
-                and <strong>attach your payment screenshot</strong>. We'll confirm your order shortly!
+                Your order message has been <strong>copied to your clipboard</strong>. Messenger should be open — just <strong>paste</strong> (long press → Paste) and <strong>attach your payment screenshot</strong>.
               </p>
-              <div style={{ marginTop: '1.5rem', padding: '1rem', background: '#f1f5f9', borderRadius: '8px', textAlign: 'left', fontSize: '0.8rem', color: '#64748b' }}>
-                <strong>Didn't open?</strong> Go to Messenger and search for "Goods On Demand", then paste the copied message.
+              <div style={{ marginTop: '1.5rem', padding: '1rem', background: '#f1f5f9', borderRadius: '8px', textAlign: 'left' }}>
+                <p style={{ fontSize: '0.8rem', color: '#64748b', marginBottom: '0.5rem' }}><strong>If Messenger didn't open:</strong></p>
+                <a
+                  href="https://www.facebook.com/messages/t/100063829217498"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ color: '#6d28d9', fontWeight: '600', fontSize: '0.85rem' }}
+                >
+                  Click here to open Messenger
+                </a>
+                <p style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: '0.75rem' }}>
+                  Then paste the copied message and attach your payment screenshot.
+                </p>
               </div>
               <Link to="/" className="continue-shopping-btn" style={{ marginTop: '2rem', display: 'inline-block' }}>
                 Back to Home
