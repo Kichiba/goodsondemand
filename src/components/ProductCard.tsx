@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { formatPrice } from '@shared/constants';
 import type { Product } from '@shared/types';
@@ -23,7 +24,7 @@ export default function ProductCard({ product }: ProductCardProps) {
 
   return (
     <div className="product-card">
-      <div className="product-image-wrapper">
+      <Link to={`/product/${product.id}`} className="product-image-wrapper">
         {product.images[0] ? (
           <img
             src={product.images[0]}
@@ -42,10 +43,12 @@ export default function ProductCard({ product }: ProductCardProps) {
         )}
         {isOutOfStock && <div className="out-of-stock-badge">Sold Out</div>}
         <div className="product-category-badge">{product.category}</div>
-      </div>
+      </Link>
 
       <div className="product-info">
-        <h3 className="product-name">{product.name}</h3>
+        <Link to={`/product/${product.id}`} className="product-name-link">
+          <h3 className="product-name">{product.name}</h3>
+        </Link>
         <p className="product-description">{product.description}</p>
         <div className="product-footer">
           <span className="product-price">{formatPrice(product.price)}</span>
