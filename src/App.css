@@ -68,11 +68,32 @@ body {
   text-decoration: none;
   display: flex;
   align-items: center;
+  gap: 0.75rem;
 }
 
 .brand-logo {
-  height: 45px;
+  height: 40px;
   width: auto;
+}
+
+.brand-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.brand-name {
+  font-size: 1.1rem;
+  font-weight: 900;
+  color: var(--text);
+  letter-spacing: -0.02em;
+}
+
+.brand-tagline {
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: var(--primary);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
 }
 
 .navbar-links {
@@ -121,7 +142,7 @@ body {
 .hero {
   text-align: center;
   padding: 4rem 1rem;
-  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+  background: #b4aed4;
   border-radius: var(--radius);
   margin-bottom: 3rem;
   color: white;
@@ -142,7 +163,7 @@ body {
 
 .hero-subtitle {
   font-size: 1.1rem;
-  color: #94a3b8;
+  color: #3b2670;
   max-width: 500px;
   margin: 0 auto 2rem;
 }

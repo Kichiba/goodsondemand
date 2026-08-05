@@ -9,6 +9,10 @@ export default function Navbar() {
       <div className="navbar-inner">
         <Link to="/" className="navbar-brand">
           <img src="./logo.png" alt="Goods On Demand" className="brand-logo" />
+          <div className="brand-text">
+            <span className="brand-name">GOODS ON DEMAND</span>
+            <span className="brand-tagline">Branded & Authentic</span>
+          </div>
         </Link>
 
         <div className="navbar-links">
