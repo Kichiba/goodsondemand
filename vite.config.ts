@@ -10,6 +10,6 @@ export default defineConfig({
       '@shared': path.resolve(__dirname, './shared'),
     },
   },
-  // For GitHub Pages project page: /repo-name/
-  base: '/goodsondemand.github.io/',
+  // Relative base path — works on any hosting path
+  base: './',
 })
