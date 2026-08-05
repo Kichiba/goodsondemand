@@ -45,6 +45,7 @@ export function formatPrice(amount: number): string {
 // Generate Messenger link with pre-filled order message
 export function generateMessengerOrderLink(
   customerName: string,
+  customerContact: string,
   items: { name: string; quantity: number; price: number }[],
   total: number
 ): string {
@@ -60,6 +61,7 @@ ${itemLines}
 Total Amount: ${formatPrice(total)}
 
 Customer: ${customerName}
+Contact #: ${customerContact}
 
 Payment: Sent via BPI InstaPay (screenshot attached below)
 

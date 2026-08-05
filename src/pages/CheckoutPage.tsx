@@ -2,10 +2,13 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { formatPrice, generateMessengerOrderLink } from '@shared/constants';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { db } from '../services/firebase';
 
 export default function CheckoutPage() {
   const { items, totalAmount, clearCart } = useCart();
   const [customerName, setCustomerName] = useState('');
+  const [customerContact, setCustomerContact] = useState('');
   const [step, setStep] = useState<'info' | 'payment' | 'send'>('info');
 
   if (items.length === 0) {
@@ -22,9 +25,32 @@ export default function CheckoutPage() {
     );
   }
 
-  const handleSendOrder = () => {
+  const handleSendOrder = async () => {
+    // 1. Save order to Firestore so it shows in the inventory app
+    try {
+      await addDoc(collection(db, 'orders'), {
+        items: items.map((item) => ({
+          productId: item.productId,
+          productName: item.productName,
+          quantity: item.quantity,
+          price: item.price,
+          image: item.image || null,
+        })),
+        customerName: customerName.trim(),
+        customerContact: customerContact.trim(),
+        totalAmount,
+        status: 'pending',
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+      });
+    } catch (err) {
+      console.error('Failed to save order:', err);
+    }
+
+    // 2. Open Messenger with pre-filled message
     const messengerLink = generateMessengerOrderLink(
       customerName,
+      customerContact,
       items.map((item) => ({
         name: item.productName,
         quantity: item.quantity,
@@ -33,10 +59,9 @@ export default function CheckoutPage() {
       totalAmount
     );
 
-    // Open Messenger in a new tab
     window.open(messengerLink, '_blank');
 
-    // Clear cart after sending
+    // 3. Clear cart
     clearCart();
   };
 
@@ -66,7 +91,7 @@ export default function CheckoutPage() {
           {step === 'info' && (
             <div className="checkout-section">
               <h2>Your Information</h2>
-              <p className="section-desc">We'll use this to identify your order on Messenger.</p>
+              <p className="section-desc">We'll use this to identify your order and contact you about delivery.</p>
               <div className="form-group">
                 <label htmlFor="customerName">Your Name / Messenger Name</label>
                 <input
@@ -78,9 +103,20 @@ export default function CheckoutPage() {
                   className="form-input"
                 />
               </div>
+              <div className="form-group">
+                <label htmlFor="customerContact">Contact Number</label>
+                <input
+                  id="customerContact"
+                  type="tel"
+                  value={customerContact}
+                  onChange={(e) => setCustomerContact(e.target.value)}
+                  placeholder="09XX XXX XXXX"
+                  className="form-input"
+                />
+              </div>
               <button
                 className="next-step-btn"
-                disabled={!customerName.trim()}
+                disabled={!customerName.trim() || !customerContact.trim()}
                 onClick={() => setStep('payment')}
               >
                 Continue to Payment
