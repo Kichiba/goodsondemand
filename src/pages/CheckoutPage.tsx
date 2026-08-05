@@ -70,22 +70,10 @@ export default function CheckoutPage() {
     // 4. Show confirmation then open Messenger
     setStep('done');
 
-    // Open Messenger - try multiple approaches for best compatibility
+    // Open Messenger - m.me works on mobile, facebook.com/messages on desktop
     setTimeout(() => {
-      const message = encodeURIComponent(orderMessage);
-      // fb-messenger link works on mobile apps
-      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-      if (isMobile) {
-        // On mobile, fb-messenger:// deep link or m.me with ref works better
-        window.location.href = `fb-messenger://share?link=&app_id=&text=${message}`;
-        // Fallback after 2 seconds if deep link didn't work
-        setTimeout(() => {
-          window.open(`https://m.me/100063829217498`, '_blank');
-        }, 2000);
-      } else {
-        window.open('https://www.facebook.com/messages/t/100063829217498', '_blank');
-      }
-    }, 1500);
+      window.open('https://m.me/100063829217498', '_blank');
+    }, 2000);
 
     // 5. Clear cart
     clearCart();
@@ -221,27 +209,41 @@ export default function CheckoutPage() {
 
           {/* Step 4: Done confirmation */}
           {step === 'done' && (
-            <div className="checkout-section" style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>&#10003;</div>
-              <h2>Order Submitted!</h2>
+            <div className="checkout-section checkout-done">
+              <div className="done-icon">&#128203;</div>
+              <h2>Message Copied!</h2>
               <p className="section-desc">
-                Your order message has been <strong>copied to your clipboard</strong>. Messenger should be open — just <strong>paste</strong> (long press → Paste) and <strong>attach your payment screenshot</strong>.
+                Your order details have been copied. Messenger is opening — just <strong>paste</strong> the message and <strong>attach your payment screenshot</strong>.
               </p>
-              <div style={{ marginTop: '1.5rem', padding: '1rem', background: '#f1f5f9', borderRadius: '8px', textAlign: 'left' }}>
-                <p style={{ fontSize: '0.8rem', color: '#64748b', marginBottom: '0.5rem' }}><strong>If Messenger didn't open:</strong></p>
-                <a
-                  href="https://www.facebook.com/messages/t/100063829217498"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{ color: '#6d28d9', fontWeight: '600', fontSize: '0.85rem' }}
-                >
-                  Click here to open Messenger
-                </a>
-                <p style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: '0.75rem' }}>
-                  Then paste the copied message and attach your payment screenshot.
-                </p>
+              <div className="done-steps">
+                <div className="done-step">
+                  <span className="done-step-num">1</span>
+                  <span>Long press the message box in Messenger</span>
+                </div>
+                <div className="done-step">
+                  <span className="done-step-num">2</span>
+                  <span>Tap "Paste"</span>
+                </div>
+                <div className="done-step">
+                  <span className="done-step-num">3</span>
+                  <span>Attach your payment screenshot</span>
+                </div>
+                <div className="done-step">
+                  <span className="done-step-num">4</span>
+                  <span>Send!</span>
+                </div>
               </div>
-              <Link to="/" className="continue-shopping-btn" style={{ marginTop: '2rem', display: 'inline-block' }}>
+              <a
+                href="https://m.me/100063829217498"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="messenger-btn"
+                style={{ marginTop: '1.5rem', textDecoration: 'none', display: 'inline-flex' }}
+              >
+                Open Messenger Again
+              </a>
+              <br />
+              <Link to="/" className="continue-shopping-link" style={{ marginTop: '1rem', display: 'inline-block' }}>
                 Back to Home
               </Link>
             </div>
