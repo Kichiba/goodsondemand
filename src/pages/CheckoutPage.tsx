@@ -98,25 +98,10 @@ export default function CheckoutPage() {
               </p>
 
               <div className="qr-code-container">
-                {/* Replace this placeholder with the actual QR code image */}
-                <div className="qr-placeholder">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
-                    <rect x="3" y="3" width="7" height="7"></rect>
-                    <rect x="14" y="3" width="7" height="7"></rect>
-                    <rect x="3" y="14" width="7" height="7"></rect>
-                    <rect x="14" y="14" width="3" height="3"></rect>
-                    <rect x="18" y="14" width="3" height="3"></rect>
-                    <rect x="14" y="18" width="3" height="3"></rect>
-                    <rect x="18" y="18" width="3" height="3"></rect>
-                  </svg>
-                  <p>QR Code will be displayed here</p>
-                  <p className="qr-note">
-                    (Upload your GCash/bank QR code image to <code>public/payment-qr.png</code>)
-                  </p>
+                <div className="qr-section">
+                  <h3 className="qr-label">BPI (InstaPay)</h3>
+                  <img src="./payment-qr-bpi.png" alt="BPI Payment QR Code" className="qr-image" />
                 </div>
-
-                {/* Uncomment this when you have the actual QR image: */}
-                {/* <img src="/payment-qr.png" alt="Payment QR Code" className="qr-image" /> */}
               </div>
 
               <div className="payment-amount">
