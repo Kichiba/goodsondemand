@@ -9,7 +9,7 @@ interface ProductCardProps {
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
-  const { addItem } = useCart();
+  const { addItem, getItemQuantity } = useCart();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   const handleAddToCart = (e: React.MouseEvent) => {
@@ -21,14 +21,16 @@ export default function ProductCard({ product }: ProductCardProps) {
       price: product.price,
       quantity: 1,
       image: product.images[0] || undefined,
-    });
+    }, product.stock);
   };
 
   const isOutOfStock = product.stock <= 0;
+  const currentInCart = getItemQuantity(product.id);
+  const isMaxedOut = currentInCart >= product.stock;
   const hasMultipleImages = product.images.length > 1;
 
   // Handle hover zones for image switching
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handleMouseMove = (e: React.MouseEvent<HTMLAnchorElement>) => {
     if (!hasMultipleImages) return;
     const rect = e.currentTarget.getBoundingClientRect();
     const x = e.clientX - rect.left;
@@ -101,10 +103,10 @@ export default function ProductCard({ product }: ProductCardProps) {
           <button
             className="add-to-cart-btn"
             onClick={handleAddToCart}
-            disabled={isOutOfStock}
+            disabled={isOutOfStock || isMaxedOut}
             aria-label={`Add ${product.name} to cart`}
           >
-            {isOutOfStock ? 'Sold Out' : 'Add to Cart'}
+            {isOutOfStock ? 'Sold Out' : isMaxedOut ? 'Max Added' : 'Add to Cart'}
           </button>
         </div>
       </div>

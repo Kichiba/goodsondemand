@@ -11,7 +11,7 @@ export default function ProductDetailPage() {
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedImage, setSelectedImage] = useState(0);
-  const { addItem } = useCart();
+  const { addItem, getItemQuantity } = useCart();
 
   useEffect(() => {
     async function fetchProduct() {
@@ -55,6 +55,8 @@ export default function ProductDetailPage() {
 
   const categoryName = CATEGORIES.find((c) => c.id === product.category)?.name || product.category;
   const isOutOfStock = product.stock <= 0;
+  const currentInCart = getItemQuantity(product.id);
+  const isMaxedOut = currentInCart >= product.stock;
 
   const handleAddToCart = () => {
     addItem({
@@ -63,7 +65,7 @@ export default function ProductDetailPage() {
       price: product.price,
       quantity: 1,
       image: product.images[0] || undefined,
-    });
+    }, product.stock);
   };
 
   return (
@@ -132,9 +134,9 @@ export default function ProductDetailPage() {
           <button
             className="detail-add-to-cart"
             onClick={handleAddToCart}
-            disabled={isOutOfStock}
+            disabled={isOutOfStock || isMaxedOut}
           >
-            {isOutOfStock ? 'Sold Out' : 'Add to Cart'}
+            {isOutOfStock ? 'Sold Out' : isMaxedOut ? `Max in Cart (${currentInCart})` : 'Add to Cart'}
           </button>
         </div>
       </div>
