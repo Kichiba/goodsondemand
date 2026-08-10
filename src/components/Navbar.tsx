@@ -1,8 +1,22 @@
+import { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 
 export default function Navbar() {
   const { totalItems } = useCart();
+  const prevItems = useRef(totalItems);
+  const cartRef = useRef<HTMLAnchorElement>(null);
+
+  // Bounce animation when items are added
+  useEffect(() => {
+    if (totalItems > prevItems.current && cartRef.current) {
+      cartRef.current.classList.add('cart-bounce');
+      setTimeout(() => {
+        cartRef.current?.classList.remove('cart-bounce');
+      }, 500);
+    }
+    prevItems.current = totalItems;
+  }, [totalItems]);
 
   return (
     <nav className="navbar">
@@ -18,7 +32,7 @@ export default function Navbar() {
         <div className="navbar-links">
           <Link to="/" className="nav-link">Home</Link>
           <Link to="/products" className="nav-link">Products</Link>
-          <Link to="/cart" className="nav-link cart-link">
+          <Link to="/cart" className="nav-link cart-link" ref={cartRef}>
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="9" cy="21" r="1"></circle>
               <circle cx="20" cy="21" r="1"></circle>

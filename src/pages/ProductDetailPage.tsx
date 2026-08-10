@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../services/firebase';
 import { useCart } from '../context/CartContext';
+import { useToast } from '../components/Toast';
 import { formatPrice, CATEGORIES } from '@shared/constants';
 import type { Product } from '@shared/types';
 
@@ -11,7 +12,10 @@ export default function ProductDetailPage() {
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedImage, setSelectedImage] = useState(0);
+  const [zoomed, setZoomed] = useState(false);
+  const [zoomPos, setZoomPos] = useState({ x: 50, y: 50 });
   const { addItem, getItemQuantity } = useCart();
+  const { showToast } = useToast();
 
   useEffect(() => {
     async function fetchProduct() {
@@ -66,6 +70,14 @@ export default function ProductDetailPage() {
       quantity: 1,
       image: product.images[0] || undefined,
     }, product.stock);
+    showToast(`${product.name} added to cart`);
+  };
+
+  const handleImageMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    setZoomPos({ x, y });
   };
 
   return (
@@ -77,12 +89,18 @@ export default function ProductDetailPage() {
       <div className="product-detail-layout">
         {/* Image Gallery */}
         <div className="product-gallery">
-          <div className="gallery-main">
+          <div
+            className={`gallery-main ${zoomed ? 'gallery-zoomed' : ''}`}
+            onMouseEnter={() => setZoomed(true)}
+            onMouseLeave={() => setZoomed(false)}
+            onMouseMove={handleImageMouseMove}
+          >
             {product.images[selectedImage] ? (
               <img
                 src={product.images[selectedImage]}
                 alt={product.name}
                 className="gallery-main-image"
+                style={zoomed ? { transformOrigin: `${zoomPos.x}% ${zoomPos.y}%` } : undefined}
               />
             ) : (
               <div className="gallery-placeholder">
@@ -139,6 +157,18 @@ export default function ProductDetailPage() {
             {isOutOfStock ? 'Sold Out' : isMaxedOut ? `Max in Cart (${currentInCart})` : 'Add to Cart'}
           </button>
         </div>
+      </div>
+
+      {/* Sticky Add to Cart (mobile) */}
+      <div className="sticky-cart-bar">
+        <div className="sticky-cart-price">{formatPrice(product.price)}</div>
+        <button
+          className="sticky-cart-btn"
+          onClick={handleAddToCart}
+          disabled={isOutOfStock || isMaxedOut}
+        >
+          {isOutOfStock ? 'Sold Out' : isMaxedOut ? 'Max Added' : 'Add to Cart'}
+        </button>
       </div>
     </div>
   );

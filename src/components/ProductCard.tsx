@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
+import { useToast } from './Toast';
 import { formatPrice } from '@shared/constants';
 import type { Product } from '@shared/types';
 
@@ -10,6 +11,7 @@ interface ProductCardProps {
 
 export default function ProductCard({ product }: ProductCardProps) {
   const { addItem, getItemQuantity } = useCart();
+  const { showToast } = useToast();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [addedAnimation, setAddedAnimation] = useState(false);
 
@@ -24,14 +26,20 @@ export default function ProductCard({ product }: ProductCardProps) {
       image: product.images[0] || undefined,
     }, product.stock);
 
-    // Trigger animation
+    // Trigger animation + toast
     setAddedAnimation(true);
+    showToast(`${product.name} added to cart`);
     setTimeout(() => setAddedAnimation(false), 1200);
   };
 
   const isOutOfStock = product.stock <= 0;
   const currentInCart = getItemQuantity(product.id);
   const isMaxedOut = currentInCart >= product.stock;
+
+  // Check if product is new (added within last 7 days)
+  const isNew = product.createdAt
+    ? Date.now() / 1000 - product.createdAt.seconds < 7 * 24 * 60 * 60
+    : false;
   const hasMultipleImages = product.images.length > 1;
 
   // Handle hover zones for image switching
@@ -91,6 +99,7 @@ export default function ProductCard({ product }: ProductCardProps) {
           </div>
         )}
         {isOutOfStock && <div className="out-of-stock-badge">Sold Out</div>}
+        {isNew && !isOutOfStock && <div className="new-badge">NEW</div>}
         <div className="product-category-badge">{product.category}</div>
 
         {/* Image dots indicator */}

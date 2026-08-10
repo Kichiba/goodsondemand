@@ -1,6 +1,8 @@
 import { HashRouter, Routes, Route } from 'react-router-dom';
 import { CartProvider } from './context/CartContext';
+import { ToastProvider } from './components/Toast';
 import Navbar from './components/Navbar';
+import BackToTop from './components/BackToTop';
 import HomePage from './pages/HomePage';
 import ProductsPage from './pages/ProductsPage';
 import ProductDetailPage from './pages/ProductDetailPage';
@@ -12,6 +14,7 @@ import './App.css';
 function App() {
   return (
     <CartProvider>
+      <ToastProvider>
       <HashRouter>
         <div className="app">
           <Navbar />
@@ -36,8 +39,10 @@ function App() {
               Follow us on Facebook
             </a>
           </footer>
+          <BackToTop />
         </div>
       </HashRouter>
+      </ToastProvider>
     </CartProvider>
   );
 }
