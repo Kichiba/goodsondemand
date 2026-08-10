@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { formatPrice } from '@shared/constants';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
@@ -7,11 +7,14 @@ import { db } from '../services/firebase';
 
 export default function CheckoutPage() {
   const { items, totalAmount, clearCart } = useCart();
+  const navigate = useNavigate();
   const [customerName, setCustomerName] = useState('');
   const [customerContact, setCustomerContact] = useState('');
   const [step, setStep] = useState<'info' | 'payment' | 'send' | 'done'>('info');
 
-  if (items.length === 0) {
+  const [orderId, setOrderId] = useState<string | null>(null);
+
+  if (items.length === 0 && !orderId) {
     return (
       <div className="checkout-page">
         <h1>Checkout</h1>
@@ -28,7 +31,7 @@ export default function CheckoutPage() {
   const handleSendOrder = async () => {
     // 1. Save order to Firestore so it shows in the inventory app
     try {
-      await addDoc(collection(db, 'orders'), {
+      const docRef = await addDoc(collection(db, 'orders'), {
         items: items.map((item) => ({
           productId: item.productId,
           productName: item.productName,
@@ -43,6 +46,7 @@ export default function CheckoutPage() {
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
       });
+      setOrderId(docRef.id);
     } catch (err) {
       console.error('Failed to save order:', err);
     }
@@ -233,6 +237,16 @@ export default function CheckoutPage() {
                   <span>Send!</span>
                 </div>
               </div>
+
+              {orderId && (
+                <div className="invoice-link-box">
+                  <p><strong>Your Invoice:</strong></p>
+                  <Link to={`/invoice/${orderId}`} className="invoice-link-btn">
+                    View / Print Invoice
+                  </Link>
+                </div>
+              )}
+
               <a
                 href="https://m.me/100063829217498"
                 target="_blank"
