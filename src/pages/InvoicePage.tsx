@@ -38,7 +38,27 @@ export default function InvoicePage() {
   }, [id]);
 
   const handlePrint = () => {
-    window.print();
+    // Check if on mobile
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+    if (isMobile && navigator.share) {
+      // Use native share on mobile
+      navigator.share({
+        title: `Invoice #${order?.id?.slice(-8).toUpperCase()}`,
+        text: `Invoice from Goods On Demand`,
+        url: window.location.href,
+      }).catch(() => {
+        // Fallback to print if share is cancelled
+        window.print();
+      });
+    } else {
+      window.print();
+    }
+  };
+
+  const handleScreenshot = () => {
+    // Hint for mobile users
+    alert('Tip: Take a screenshot of this page to save your invoice!\n\niPhone: Side button + Volume Up\nAndroid: Power + Volume Down');
   };
 
   if (loading) {
@@ -81,7 +101,7 @@ export default function InvoicePage() {
 
   return (
     <div className="invoice-page">
-      {/* Print/Save button - hidden when printing */}
+      {/* Actions - hidden when printing */}
       <div className="invoice-actions no-print">
         <button className="print-btn" onClick={handlePrint}>
           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -89,7 +109,15 @@ export default function InvoicePage() {
             <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
             <rect x="6" y="14" width="12" height="8"></rect>
           </svg>
-          Print / Save as PDF
+          {/iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ? 'Share Invoice' : 'Print / Save as PDF'}
+        </button>
+        <button className="screenshot-btn" onClick={handleScreenshot}>
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+            <polyline points="21 15 16 10 5 21"></polyline>
+          </svg>
+          Save as Screenshot
         </button>
       </div>
 
