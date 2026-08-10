@@ -67,6 +67,7 @@ export default function ProductDetailPage() {
       productId: product.id,
       productName: product.name,
       price: product.salePrice || product.price,
+      originalPrice: product.salePrice ? product.price : undefined,
       quantity: 1,
       image: product.images[0] || undefined,
     }, product.stock);

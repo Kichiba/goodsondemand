@@ -2125,3 +2125,23 @@ body {
   color: #a16207;
   margin-top: 0.15rem;
 }
+
+
+/* Cart sale price display */
+.cart-item-price {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+}
+
+.cart-price-sale {
+  color: #dc2626;
+  font-weight: 700;
+}
+
+.cart-price-original {
+  color: #94a3b8;
+  text-decoration: line-through;
+  font-size: 0.75rem;
+}

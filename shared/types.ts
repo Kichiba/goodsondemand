@@ -63,6 +63,7 @@ export interface CartItem {
   productId: string;
   productName: string;
   price: number;
+  originalPrice?: number;    // Original price before sale (for display)
   quantity: number;
   image?: string;
 }

@@ -46,7 +46,16 @@ export default function CartPage() {
 
               <div className="cart-item-details">
                 <h3>{item.productName}</h3>
-                <p className="cart-item-price">{formatPrice(item.price)}</p>
+                <div className="cart-item-price">
+                  {item.originalPrice ? (
+                    <>
+                      <span className="cart-price-sale">{formatPrice(item.price)}</span>
+                      <span className="cart-price-original">{formatPrice(item.originalPrice)}</span>
+                    </>
+                  ) : (
+                    <span>{formatPrice(item.price)}</span>
+                  )}
+                </div>
               </div>
 
               <div className="cart-item-quantity">
