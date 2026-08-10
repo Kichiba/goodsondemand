@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { formatPrice } from '@shared/constants';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
@@ -7,7 +7,6 @@ import { db } from '../services/firebase';
 
 export default function CheckoutPage() {
   const { items, totalAmount, clearCart } = useCart();
-  const navigate = useNavigate();
   const [customerName, setCustomerName] = useState('');
   const [customerContact, setCustomerContact] = useState('');
   const [step, setStep] = useState<'info' | 'payment' | 'send' | 'done'>('info');
