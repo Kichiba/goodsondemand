@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom';
-import { CATEGORIES } from '@shared/constants';
 
 export default function HomePage() {
   return (
@@ -21,25 +20,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Categories Section */}
-      <section className="categories-section">
-        <h2 className="section-title">Shop by Category</h2>
-        <div className="categories-grid">
-          {CATEGORIES.map((cat) => (
-            <Link
-              key={cat.id}
-              to={`/products?category=${cat.id}`}
-              className="category-card"
-            >
-              <div className="category-icon-wrapper">
-                <span className="category-icon-text">{cat.name.charAt(0)}</span>
-              </div>
-              <span className="category-card-name">{cat.name}</span>
-            </Link>
-          ))}
-        </div>
-      </section>
-
       {/* How It Works */}
       <section className="how-it-works">
         <h2 className="section-title">How to Order</h2>
@@ -52,12 +32,12 @@ export default function HomePage() {
           <div className="step-card">
             <div className="step-number">2</div>
             <h3>Pay via QR Code</h3>
-            <p>Scan our GCash/bank QR code at checkout to send your payment.</p>
+            <p>Scan our BPI QR code at checkout to send your payment.</p>
           </div>
           <div className="step-card">
             <div className="step-number">3</div>
             <h3>Confirm via Messenger</h3>
-            <p>Send your order details and payment proof to our Messenger. We'll confirm and ship!</p>
+            <p>Send your order details and payment screenshot to our Messenger. We'll confirm and ship!</p>
           </div>
         </div>
       </section>
