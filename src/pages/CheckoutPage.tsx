@@ -55,7 +55,11 @@ export default function CheckoutPage() {
       .map((item) => `• ${item.productName} x${item.quantity} - ${formatPrice(item.price * item.quantity)}`)
       .join('\n');
 
-    const orderMessage = `Hi Goods On Demand! I'd like to place an order:\n\nORDER DETAILS:\n${itemLines}\n\nTotal Amount: ${formatPrice(totalAmount)}\n\nCustomer: ${customerName}\nContact #: ${customerContact}\n\nPayment: Sent via BPI InstaPay (screenshot attached below)\n\nPlease confirm my order. Thank you!`;
+    const invoiceUrl = orderId
+      ? `${window.location.origin}${window.location.pathname}#/invoice/${orderId}`
+      : '';
+
+    const orderMessage = `Hi Goods On Demand! I'd like to place an order:\n\nORDER DETAILS:\n${itemLines}\n\nTotal Amount: ${formatPrice(totalAmount)}\n\nCustomer: ${customerName}\nContact #: ${customerContact}\n\nPayment: Sent via BPI InstaPay (screenshot attached below)\n\n${invoiceUrl ? `Invoice: ${invoiceUrl}\n\n` : ''}Please confirm my order. Thank you!`;
 
     // 3. Copy message to clipboard
     try {

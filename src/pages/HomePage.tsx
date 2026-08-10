@@ -9,7 +9,7 @@ export default function HomePage() {
         <div className="hero-content">
           <img src="./logo.png" alt="Goods On Demand" className="hero-logo" />
           <p className="hero-subtitle">
-            Branded and authentic bags, wallets, belts, clothes, perfumes & more — shipped from Marikina City. Order easily via Messenger.
+            Branded and authentic bags, wallets, belts, clothes, perfumes & more — shipped from Marikina City.
           </p>
           <Link to="/products" className="hero-cta">
             Shop Now
