@@ -1,9 +1,8 @@
 import { CATEGORIES } from '@shared/constants';
-import type { ProductCategory } from '@shared/types';
 
 interface CategoryFilterProps {
-  selected: ProductCategory | 'all';
-  onSelect: (category: ProductCategory | 'all') => void;
+  selected: string;
+  onSelect: (category: string) => void;
 }
 
 export default function CategoryFilter({ selected, onSelect }: CategoryFilterProps) {
@@ -14,6 +13,12 @@ export default function CategoryFilter({ selected, onSelect }: CategoryFilterPro
         onClick={() => onSelect('all')}
       >
         All
+      </button>
+      <button
+        className={`category-btn promo-btn ${selected === 'promos' ? 'active' : ''}`}
+        onClick={() => onSelect('promos')}
+      >
+        Promos
       </button>
       {CATEGORIES.map((cat) => (
         <button

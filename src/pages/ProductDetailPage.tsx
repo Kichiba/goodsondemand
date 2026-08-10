@@ -66,7 +66,7 @@ export default function ProductDetailPage() {
     addItem({
       productId: product.id,
       productName: product.name,
-      price: product.price,
+      price: product.salePrice || product.price,
       quantity: 1,
       image: product.images[0] || undefined,
     }, product.stock);
@@ -132,7 +132,28 @@ export default function ProductDetailPage() {
         <div className="product-detail-info">
           <span className="detail-category">{categoryName}</span>
           <h1 className="detail-name">{product.name}</h1>
-          <p className="detail-price">{formatPrice(product.price)}</p>
+
+          {product.salePrice ? (
+            <div className="detail-price-group">
+              <p className="detail-price sale">{formatPrice(product.salePrice)}</p>
+              <p className="detail-price-original">{formatPrice(product.price)}</p>
+              {product.promoLabel && <span className="detail-promo-tag">{product.promoLabel}</span>}
+            </div>
+          ) : (
+            <p className="detail-price">{formatPrice(product.price)}</p>
+          )}
+
+          {product.layaway?.enabled && (
+            <div className="layaway-terms">
+              <span className="layaway-icon">&#128179;</span>
+              <div>
+                <p className="layaway-title">Layaway Available</p>
+                <p className="layaway-detail">
+                  {formatPrice(product.layaway.amountPerPayday)}/payday for {product.layaway.numberOfMonths} months
+                </p>
+              </div>
+            </div>
+          )}
 
           {product.description && (
             <div className="detail-description">

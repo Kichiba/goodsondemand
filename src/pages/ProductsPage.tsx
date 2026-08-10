@@ -4,7 +4,7 @@ import ProductCard from '../components/ProductCard';
 import CategoryFilter from '../components/CategoryFilter';
 import SkeletonGrid from '../components/SkeletonGrid';
 import { getProducts } from '../services/firebase';
-import type { Product, ProductCategory } from '@shared/types';
+import type { Product } from '@shared/types';
 
 type SortOption = 'newest' | 'price-low' | 'price-high' | 'name';
 
@@ -16,7 +16,7 @@ export default function ProductsPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<SortOption>('newest');
 
-  const categoryParam = searchParams.get('category') as ProductCategory | null;
+  const categoryParam = searchParams.get('category') as string | null;
   const selectedCategory = categoryParam || 'all';
 
   useEffect(() => {
@@ -37,10 +37,12 @@ export default function ProductsPage() {
     fetchProducts();
   }, []);
 
-  // Filter by category
+  // Filter by category (or promos)
   let filteredProducts =
     selectedCategory === 'all'
       ? products
+      : selectedCategory === 'promos'
+      ? products.filter((p) => p.salePrice || p.promoLabel)
       : products.filter((p) => p.category === selectedCategory);
 
   // Filter by search
@@ -68,7 +70,7 @@ export default function ProductsPage() {
     }
   });
 
-  const handleCategoryChange = (category: ProductCategory | 'all') => {
+  const handleCategoryChange = (category: string) => {
     if (category === 'all') {
       setSearchParams({});
     } else {

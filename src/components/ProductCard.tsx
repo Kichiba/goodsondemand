@@ -21,7 +21,7 @@ export default function ProductCard({ product }: ProductCardProps) {
     addItem({
       productId: product.id,
       productName: product.name,
-      price: product.price,
+      price: product.salePrice || product.price,
       quantity: 1,
       image: product.images[0] || undefined,
     }, product.stock);
@@ -100,6 +100,7 @@ export default function ProductCard({ product }: ProductCardProps) {
         )}
         {isOutOfStock && <div className="out-of-stock-badge">Sold Out</div>}
         {isNew && !isOutOfStock && <div className="new-badge">NEW</div>}
+        {product.promoLabel && <div className="promo-label-badge">{product.promoLabel}</div>}
         <div className="product-category-badge">{product.category}</div>
 
         {/* Image dots indicator */}
@@ -128,7 +129,16 @@ export default function ProductCard({ product }: ProductCardProps) {
           )}
         </div>
         <div className="product-footer">
-          <span className="product-price">{formatPrice(product.price)}</span>
+          <div className="product-price-group">
+            {product.salePrice ? (
+              <>
+                <span className="product-price sale">{formatPrice(product.salePrice)}</span>
+                <span className="product-price-original">{formatPrice(product.price)}</span>
+              </>
+            ) : (
+              <span className="product-price">{formatPrice(product.price)}</span>
+            )}
+          </div>
           <button
             className="add-to-cart-btn"
             onClick={handleAddToCart}

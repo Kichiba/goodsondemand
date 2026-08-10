@@ -15,8 +15,15 @@ export interface Product {
   name: string;
   description: string;
   price: number;
+  salePrice?: number;
+  promoLabel?: string;
+  layaway?: {
+    enabled: boolean;
+    amountPerPayday: number;
+    numberOfMonths: number;
+  };
   category: ProductCategory;
-  images: string[];          // Firebase Storage URLs
+  images: string[];
   stock: number;
   isAvailable: boolean;
   createdAt: AppTimestamp;
