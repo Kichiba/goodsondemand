@@ -29,6 +29,7 @@ export default function CheckoutPage() {
 
   const handleSendOrder = async () => {
     // 1. Save order to Firestore so it shows in the inventory app
+    let newOrderId = '';
     try {
       const docRef = await addDoc(collection(db, 'orders'), {
         items: items.map((item) => ({
@@ -45,21 +46,22 @@ export default function CheckoutPage() {
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
       });
+      newOrderId = docRef.id;
       setOrderId(docRef.id);
     } catch (err) {
       console.error('Failed to save order:', err);
     }
 
-    // 2. Build the order message
+    // 2. Build the order message (use newOrderId directly since state hasn't updated yet)
     const itemLines = items
       .map((item) => `• ${item.productName} x${item.quantity} - ${formatPrice(item.price * item.quantity)}`)
       .join('\n');
 
-    const invoiceUrl = orderId
-      ? `${window.location.origin}${window.location.pathname}#/invoice/${orderId}`
+    const invoiceUrl = newOrderId
+      ? `${window.location.origin}${window.location.pathname}#/invoice/${newOrderId}`
       : '';
 
-    const orderMessage = `Hi Goods On Demand! I'd like to place an order:\n\nORDER DETAILS:\n${itemLines}\n\nTotal Amount: ${formatPrice(totalAmount)}\n\nCustomer: ${customerName}\nContact #: ${customerContact}\n\nPayment: Sent via BPI InstaPay (screenshot attached below)\n\n${invoiceUrl ? `Invoice: ${invoiceUrl}\n\n` : ''}Please confirm my order. Thank you!`;
+    const orderMessage = `Hi Goods On Demand! I'd like to place an order:\n\nORDER DETAILS:\n${itemLines}\n\nTotal Amount: ${formatPrice(totalAmount)}\n\nCustomer: ${customerName}\nContact #: ${customerContact}\n\nPayment: Sent via BPI InstaPay (screenshot attached below)\n\nInvoice: ${invoiceUrl}\n\nPlease confirm my order. Thank you!`;
 
     // 3. Copy message to clipboard
     try {
