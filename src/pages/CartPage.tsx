@@ -5,6 +5,12 @@ import { formatPrice } from '@shared/constants';
 export default function CartPage() {
   const { items, removeItem, updateQuantity, totalAmount } = useCart();
 
+  // Calculate original total (before discounts)
+  const originalTotal = items.reduce(
+    (sum, item) => sum + (item.originalPrice || item.price) * item.quantity,
+    0
+  );
+
   if (items.length === 0) {
     return (
       <div className="cart-page">
@@ -94,10 +100,22 @@ export default function CartPage() {
 
         <div className="cart-summary">
           <h2>Order Summary</h2>
+          {originalTotal > totalAmount && (
+            <div className="summary-row savings">
+              <span>Original Price</span>
+              <span className="cart-price-original">{formatPrice(originalTotal)}</span>
+            </div>
+          )}
           <div className="summary-row">
             <span>Subtotal</span>
             <span>{formatPrice(totalAmount)}</span>
           </div>
+          {originalTotal > totalAmount && (
+            <div className="summary-row discount">
+              <span>You Save</span>
+              <span className="cart-savings-amount">-{formatPrice(originalTotal - totalAmount)}</span>
+            </div>
+          )}
           <div className="summary-row">
             <span>Shipping</span>
             <span>To be discussed</span>

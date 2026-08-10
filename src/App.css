@@ -2145,3 +2145,19 @@ body {
   text-decoration: line-through;
   font-size: 0.75rem;
 }
+
+
+/* Cart savings display */
+.summary-row.savings span:last-child {
+  text-decoration: line-through;
+  color: #94a3b8;
+}
+
+.summary-row.discount {
+  color: #16a34a;
+}
+
+.cart-savings-amount {
+  font-weight: 700;
+  color: #16a34a;
+}
