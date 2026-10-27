@@ -1309,6 +1309,39 @@ body {
 
 
 /* ============================
+   Payment Method Selector
+   ============================ */
+.payment-methods {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.payment-method-tab {
+  padding: 0.6rem 1.1rem;
+  border: 1px solid var(--border);
+  background: #fff;
+  color: var(--text);
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.payment-method-tab:hover {
+  border-color: #2563eb;
+}
+
+.payment-method-tab.active {
+  background: #2563eb;
+  border-color: #2563eb;
+  color: #fff;
+}
+
+/* ============================
    Payment QR Codes
    ============================ */
 .qr-section {

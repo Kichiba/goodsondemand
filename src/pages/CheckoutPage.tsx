@@ -5,11 +5,27 @@ import { formatPrice } from '@shared/constants';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../services/firebase';
 
+type PaymentMethodId = 'bpi' | 'gcash' | 'maribank' | 'gotyme';
+
+interface PaymentMethod {
+  id: PaymentMethodId;
+  label: string;
+  qr: string;
+}
+
+const PAYMENT_METHODS: PaymentMethod[] = [
+  { id: 'gcash', label: 'GCash', qr: './payment-qr-gcash.jpeg' },
+  { id: 'maribank', label: 'Maribank', qr: './payment-qr-maribank.jpeg' },
+  { id: 'gotyme', label: 'GoTyme', qr: './payment-qr-gotyme.jpeg' },
+  { id: 'bpi', label: 'BPI (InstaPay)', qr: './payment-qr-bpi.png' },
+];
+
 export default function CheckoutPage() {
   const { items, totalAmount, clearCart } = useCart();
   const [customerName, setCustomerName] = useState('');
   const [customerContact, setCustomerContact] = useState('');
   const [step, setStep] = useState<'info' | 'payment' | 'send' | 'done'>('info');
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethodId>('bpi');
 
   const [orderId, setOrderId] = useState<string | null>(null);
 
@@ -61,7 +77,10 @@ export default function CheckoutPage() {
       ? `${window.location.origin}${window.location.pathname}#/invoice/${newOrderId}`
       : '';
 
-    const orderMessage = `Hi Goods On Demand! I'd like to place an order:\n\nORDER DETAILS:\n${itemLines}\n\nTotal Amount: ${formatPrice(totalAmount)}\n\nCustomer: ${customerName}\nContact #: ${customerContact}\n\nPayment: Sent via BPI InstaPay (screenshot attached below)\n\nInvoice: ${invoiceUrl}\n\nPlease confirm my order. Thank you!`;
+    const selectedMethod = PAYMENT_METHODS.find((m) => m.id === paymentMethod);
+    const paymentLabel = selectedMethod ? selectedMethod.label : 'bank transfer';
+
+    const orderMessage = `Hi Goods On Demand! I'd like to place an order:\n\nORDER DETAILS:\n${itemLines}\n\nTotal Amount: ${formatPrice(totalAmount)}\n\nCustomer: ${customerName}\nContact #: ${customerContact}\n\nPayment: Sent via ${paymentLabel} (screenshot attached below)\n\nInvoice: ${invoiceUrl}\n\nPlease confirm my order. Thank you!`;
 
     // 3. Copy message to clipboard
     try {
@@ -152,15 +171,30 @@ export default function CheckoutPage() {
             <div className="checkout-section">
               <h2>Send Payment</h2>
               <p className="section-desc">
-                Scan the QR code below with your GCash or banking app to send your payment of{' '}
+                Choose your payment method, then scan the QR code with your app to send your payment of{' '}
                 <strong>{formatPrice(totalAmount)}</strong>.
               </p>
 
+              <div className="payment-methods">
+                {PAYMENT_METHODS.map((method) => (
+                  <button
+                    key={method.id}
+                    type="button"
+                    className={`payment-method-tab ${paymentMethod === method.id ? 'active' : ''}`}
+                    onClick={() => setPaymentMethod(method.id)}
+                  >
+                    {method.label}
+                  </button>
+                ))}
+              </div>
+
               <div className="qr-code-container">
-                <div className="qr-section">
-                  <h3 className="qr-label">BPI (InstaPay)</h3>
-                  <img src="./payment-qr-bpi.png" alt="BPI Payment QR Code" className="qr-image" />
-                </div>
+                {PAYMENT_METHODS.filter((m) => m.id === paymentMethod).map((method) => (
+                  <div className="qr-section" key={method.id}>
+                    <h3 className="qr-label">{method.label}</h3>
+                    <img src={method.qr} alt={`${method.label} Payment QR Code`} className="qr-image" />
+                  </div>
+                ))}
               </div>
 
               <div className="payment-amount">
