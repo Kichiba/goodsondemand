@@ -11,6 +11,7 @@ import CartPage from './pages/CartPage';
 import CheckoutPage from './pages/CheckoutPage';
 import { AdminAuthProvider } from './context/AdminAuthContext';
 import AdminLayout from './pages/admin/AdminLayout';
+import AdminSummaryPage from './pages/admin/AdminSummaryPage';
 import AdminProductsPage from './pages/admin/AdminProductsPage';
 import AdminOrdersPage from './pages/admin/AdminOrdersPage';
 import './App.css';
@@ -57,7 +58,8 @@ function AdminApp() {
       <Routes>
         {/* Paths are relative to the parent "/admin/*" route. */}
         <Route path="/" element={<AdminLayout />}>
-          <Route index element={<Navigate to="products" replace />} />
+          <Route index element={<Navigate to="summary" replace />} />
+          <Route path="summary" element={<AdminSummaryPage />} />
           <Route path="products" element={<AdminProductsPage />} />
           <Route path="orders" element={<AdminOrdersPage />} />
         </Route>

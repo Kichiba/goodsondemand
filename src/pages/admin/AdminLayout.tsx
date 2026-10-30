@@ -26,6 +26,12 @@ export default function AdminLayout() {
           <span className="admin-title">Inventory Manager</span>
           <nav className="admin-nav">
             <NavLink
+              to="/admin/summary"
+              className={({ isActive }) => `admin-nav-link ${isActive ? 'active' : ''}`}
+            >
+              Summary
+            </NavLink>
+            <NavLink
               to="/admin/products"
               className={({ isActive }) => `admin-nav-link ${isActive ? 'active' : ''}`}
             >
