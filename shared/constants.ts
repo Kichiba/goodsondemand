@@ -15,6 +15,10 @@ export const CATEGORIES: { id: ProductCategory; name: string; icon: string }[] =
   { id: 'clothes', name: 'Clothes', icon: 'tshirt' },
   { id: 'belts', name: 'Belts', icon: 'belt' },
   { id: 'accessories', name: 'Accessories', icon: 'gem' },
+  { id: 'towels', name: 'Towels', icon: 'box' },
+  { id: 'kitchenwares', name: 'Kitchenwares', icon: 'box' },
+  { id: 'body-beauty', name: 'Body & Beauty', icon: 'spray-can' },
+  { id: 'watch', name: 'Watch', icon: 'gem' },
   { id: 'other', name: 'Other', icon: 'box' },
 ];
 
@@ -33,6 +37,40 @@ export const CURRENCY = {
   symbol: '₱',
   locale: 'en-PH',
 };
+
+// Calculate how long ago a product was purchased, based on an ISO date
+// (YYYY-MM-DD) up to today. Returns a human-readable string like
+// "3 months, 12 days" or null if the date is missing/invalid.
+export function calculateAgeing(datePurchased?: string): string | null {
+  if (!datePurchased) return null;
+
+  const purchased = new Date(datePurchased);
+  if (isNaN(purchased.getTime())) return null;
+
+  const now = new Date();
+  if (purchased > now) return '0 days';
+
+  let years = now.getFullYear() - purchased.getFullYear();
+  let months = now.getMonth() - purchased.getMonth();
+  let days = now.getDate() - purchased.getDate();
+
+  if (days < 0) {
+    months -= 1;
+    const prevMonth = new Date(now.getFullYear(), now.getMonth(), 0).getDate();
+    days += prevMonth;
+  }
+  if (months < 0) {
+    years -= 1;
+    months += 12;
+  }
+
+  const parts: string[] = [];
+  if (years > 0) parts.push(`${years} ${years === 1 ? 'year' : 'years'}`);
+  if (months > 0) parts.push(`${months} ${months === 1 ? 'month' : 'months'}`);
+  if (days > 0) parts.push(`${days} ${days === 1 ? 'day' : 'days'}`);
+
+  return parts.length > 0 ? parts.join(', ') : '0 days';
+}
 
 // Format price with peso sign
 export function formatPrice(amount: number): string {

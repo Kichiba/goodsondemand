@@ -1,5 +1,16 @@
 // Product categories available in the store
-export type ProductCategory = 'bags' | 'wallets' | 'perfumes' | 'clothes' | 'belts' | 'accessories' | 'other';
+export type ProductCategory =
+  | 'bags'
+  | 'wallets'
+  | 'perfumes'
+  | 'clothes'
+  | 'belts'
+  | 'accessories'
+  | 'towels'
+  | 'kitchenwares'
+  | 'body-beauty'
+  | 'watch'
+  | 'other';
 
 // Order status progression
 export type OrderStatus = 'pending' | 'paid' | 'shipped' | 'completed' | 'cancelled';
@@ -15,15 +26,19 @@ export interface Product {
   name: string;
   description: string;
   price: number;
-  salePrice?: number;
-  promoLabel?: string;
+  salePrice?: number | null;
+  costPrice?: number | null;
+  promoLabel?: string | null;
   layaway?: {
     enabled: boolean;
     amountPerPayday: number;
     numberOfMonths: number;
-  };
+  } | null;
   category: ProductCategory;
   images: string[];
+  imageLabels?: string[];    // Caption for each image, aligned by index with `images`
+  datePurchased?: string | null;    // ISO date (YYYY-MM-DD) when the product was bought
+  country?: string | null;          // Country where the product was bought
   stock: number;
   isAvailable: boolean;
   createdAt: AppTimestamp;
