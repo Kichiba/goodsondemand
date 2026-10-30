@@ -1,15 +1,18 @@
 import { Link } from 'react-router-dom';
-import { useCart } from '../context/CartContext';
+import { useCart, lineDueNow } from '../context/CartContext';
 import { formatPrice } from '@shared/constants';
 
 export default function CartPage() {
-  const { items, removeItem, updateQuantity, totalAmount } = useCart();
+  const { items, removeItem, updateQuantity, totalAmount, amountDueNow } = useCart();
 
   // Calculate original total (before discounts)
   const originalTotal = items.reduce(
     (sum, item) => sum + (item.originalPrice || item.price) * item.quantity,
     0
   );
+
+  const hasLayaway = items.some((i) => i.paymentMode === 'layaway');
+  const layawayBalance = totalAmount - amountDueNow;
 
   if (items.length === 0) {
     return (
@@ -36,8 +39,10 @@ export default function CartPage() {
 
       <div className="cart-layout">
         <div className="cart-items">
-          {items.map((item) => (
-            <div key={item.productId} className="cart-item">
+          {items.map((item) => {
+            const isLayaway = item.paymentMode === 'layaway';
+            return (
+            <div key={`${item.productId}-${item.paymentMode || 'full'}`} className="cart-item">
               <div className="cart-item-image">
                 {item.image ? (
                   <img src={item.image} alt={item.productName} />
@@ -62,18 +67,26 @@ export default function CartPage() {
                     <span>{formatPrice(item.price)}</span>
                   )}
                 </div>
+                {isLayaway && (
+                  <div className="cart-layaway-tag">
+                    <span className="layaway-badge">Layaway</span>
+                    <span className="cart-layaway-terms">
+                      {formatPrice(item.paydayAmount || 0)}/payday &middot; {item.months} months
+                    </span>
+                  </div>
+                )}
               </div>
 
               <div className="cart-item-quantity">
                 <button
-                  onClick={() => updateQuantity(item.productId, item.quantity - 1)}
+                  onClick={() => updateQuantity(item.productId, item.quantity - 1, undefined, item.paymentMode)}
                   aria-label="Decrease quantity"
                 >
                   -
                 </button>
                 <span>{item.quantity}</span>
                 <button
-                  onClick={() => updateQuantity(item.productId, item.quantity + 1)}
+                  onClick={() => updateQuantity(item.productId, item.quantity + 1, undefined, item.paymentMode)}
                   aria-label="Increase quantity"
                 >
                   +
@@ -81,12 +94,13 @@ export default function CartPage() {
               </div>
 
               <div className="cart-item-subtotal">
-                {formatPrice(item.price * item.quantity)}
+                {formatPrice(lineDueNow(item))}
+                {isLayaway && <span className="cart-item-duenow">due now</span>}
               </div>
 
               <button
                 className="cart-item-remove"
-                onClick={() => removeItem(item.productId)}
+                onClick={() => removeItem(item.productId, item.paymentMode)}
                 aria-label={`Remove ${item.productName} from cart`}
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -95,7 +109,8 @@ export default function CartPage() {
                 </svg>
               </button>
             </div>
-          ))}
+          );
+          })}
         </div>
 
         <div className="cart-summary">
@@ -120,10 +135,21 @@ export default function CartPage() {
             <span>Shipping</span>
             <span>To be discussed</span>
           </div>
+          {hasLayaway && (
+            <div className="summary-row layaway-balance">
+              <span>Layaway balance (pay over time)</span>
+              <span>{formatPrice(layawayBalance)}</span>
+            </div>
+          )}
           <div className="summary-row total">
-            <span>Total</span>
-            <span>{formatPrice(totalAmount)}</span>
+            <span>{hasLayaway ? 'Pay Now' : 'Total'}</span>
+            <span>{formatPrice(amountDueNow)}</span>
           </div>
+          {hasLayaway && (
+            <p className="layaway-note">
+              Layaway items: pay the first payday amount now, then settle the rest over the agreed months via Messenger.
+            </p>
+          )}
           <Link to="/checkout" className="checkout-btn">
             Proceed to Checkout
           </Link>

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useCart } from '../context/CartContext';
+import { useCart, lineDueNow } from '../context/CartContext';
 import { formatPrice } from '@shared/constants';
 import { collection, doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../services/firebase';
@@ -21,13 +21,16 @@ const PAYMENT_METHODS: PaymentMethod[] = [
 ];
 
 export default function CheckoutPage() {
-  const { items, totalAmount, clearCart } = useCart();
+  const { items, totalAmount, amountDueNow, clearCart } = useCart();
   const [customerName, setCustomerName] = useState('');
   const [customerContact, setCustomerContact] = useState('');
   const [step, setStep] = useState<'info' | 'payment' | 'send' | 'done'>('info');
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethodId>('bpi');
 
   const [orderId, setOrderId] = useState<string | null>(null);
+
+  const hasLayaway = items.some((i) => i.paymentMode === 'layaway');
+  const layawayBalance = totalAmount - amountDueNow;
 
   if (items.length === 0 && !orderId) {
     return (
@@ -57,6 +60,10 @@ export default function CheckoutPage() {
         quantity: item.quantity,
         price: item.price,
         image: item.image || null,
+        paymentMode: item.paymentMode || 'full',
+        paydayAmount: item.paymentMode === 'layaway' ? item.paydayAmount ?? null : null,
+        months: item.paymentMode === 'layaway' ? item.months ?? null : null,
+        amountDueNow: lineDueNow(item),
       }));
 
       // Full order — contains customer contact. Admin-read-only via rules.
@@ -65,6 +72,8 @@ export default function CheckoutPage() {
         customerName: customerName.trim(),
         customerContact: customerContact.trim(),
         totalAmount,
+        amountDueNow,
+        hasLayaway,
         status: 'pending',
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
@@ -76,6 +85,8 @@ export default function CheckoutPage() {
         items: orderItems,
         customerName: customerName.trim(),
         totalAmount,
+        amountDueNow,
+        hasLayaway,
         status: 'pending',
         createdAt: serverTimestamp(),
       });
@@ -87,7 +98,12 @@ export default function CheckoutPage() {
 
     // 2. Build the order message (use newOrderId directly since state hasn't updated yet)
     const itemLines = items
-      .map((item) => `• ${item.productName} x${item.quantity} - ${formatPrice(item.price * item.quantity)}`)
+      .map((item) => {
+        if (item.paymentMode === 'layaway') {
+          return `• ${item.productName} x${item.quantity} - LAYAWAY (${formatPrice(item.paydayAmount || 0)}/payday for ${item.months} months, full price ${formatPrice(item.price * item.quantity)})`;
+        }
+        return `• ${item.productName} x${item.quantity} - ${formatPrice(item.price * item.quantity)}`;
+      })
       .join('\n');
 
     const invoiceUrl = newOrderId
@@ -97,7 +113,11 @@ export default function CheckoutPage() {
     const selectedMethod = PAYMENT_METHODS.find((m) => m.id === paymentMethod);
     const paymentLabel = selectedMethod ? selectedMethod.label : 'bank transfer';
 
-    const orderMessage = `Hi Goods On Demand! I'd like to place an order:\n\nORDER DETAILS:\n${itemLines}\n\nTotal Amount: ${formatPrice(totalAmount)}\n\nCustomer: ${customerName}\nContact #: ${customerContact}\n\nPayment: Sent via ${paymentLabel} (screenshot attached below)\n\nInvoice: ${invoiceUrl}\n\nPlease confirm my order. Thank you!`;
+    const amountSummary = hasLayaway
+      ? `Paid Now: ${formatPrice(amountDueNow)}\nLayaway Balance (to pay over time): ${formatPrice(layawayBalance)}\nFull Total: ${formatPrice(totalAmount)}`
+      : `Total Amount: ${formatPrice(totalAmount)}`;
+
+    const orderMessage = `Hi Goods On Demand! I'd like to place an order:\n\nORDER DETAILS:\n${itemLines}\n\n${amountSummary}\n\nCustomer: ${customerName}\nContact #: ${customerContact}\n\nPayment: Sent via ${paymentLabel} (screenshot attached below)\n\nInvoice: ${invoiceUrl}\n\nPlease confirm my order. Thank you!`;
 
     // 3. Copy message to clipboard
     try {
@@ -189,7 +209,8 @@ export default function CheckoutPage() {
               <h2>Send Payment</h2>
               <p className="section-desc">
                 Choose your payment method, then scan the QR code with your app to send your payment of{' '}
-                <strong>{formatPrice(totalAmount)}</strong>.
+                <strong>{formatPrice(amountDueNow)}</strong>
+                {hasLayaway ? ' (first layaway payment + any full-price items).' : '.'}
               </p>
 
               <div className="payment-methods">
@@ -215,9 +236,14 @@ export default function CheckoutPage() {
               </div>
 
               <div className="payment-amount">
-                <span>Amount to Send:</span>
-                <strong>{formatPrice(totalAmount)}</strong>
+                <span>{hasLayaway ? 'Pay Now:' : 'Amount to Send:'}</span>
+                <strong>{formatPrice(amountDueNow)}</strong>
               </div>
+              {hasLayaway && (
+                <div className="payment-layaway-note">
+                  Remaining layaway balance of {formatPrice(layawayBalance)} is paid over the agreed months.
+                </div>
+              )}
 
               <div className="payment-actions">
                 <button className="back-btn" onClick={() => setStep('info')}>
@@ -242,14 +268,23 @@ export default function CheckoutPage() {
               <div className="order-preview">
                 <h3>Order Summary</h3>
                 {items.map((item) => (
-                  <div key={item.productId} className="order-preview-item">
-                    <span>{item.productName} x{item.quantity}</span>
-                    <span>{formatPrice(item.price * item.quantity)}</span>
+                  <div key={`${item.productId}-${item.paymentMode || 'full'}`} className="order-preview-item">
+                    <span>
+                      {item.productName} x{item.quantity}
+                      {item.paymentMode === 'layaway' && <span className="order-preview-layaway"> (Layaway)</span>}
+                    </span>
+                    <span>{formatPrice(lineDueNow(item))}</span>
                   </div>
                 ))}
+                {hasLayaway && (
+                  <div className="order-preview-item order-preview-balance">
+                    <span>Layaway balance (pay over time)</span>
+                    <span>{formatPrice(layawayBalance)}</span>
+                  </div>
+                )}
                 <div className="order-preview-total">
-                  <span>Total</span>
-                  <span>{formatPrice(totalAmount)}</span>
+                  <span>{hasLayaway ? 'Pay Now' : 'Total'}</span>
+                  <span>{formatPrice(amountDueNow)}</span>
                 </div>
               </div>
 

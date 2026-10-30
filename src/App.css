@@ -2804,3 +2804,117 @@ body {
   border-radius: 100px;
   white-space: nowrap;
 }
+
+/* ============================
+   Layaway UI
+   ============================ */
+
+/* Product detail: Add as Layaway button */
+.detail-add-layaway {
+  width: 100%;
+  margin-top: 0.75rem;
+  padding: 0.9rem 1.5rem;
+  background: #fff;
+  color: var(--primary);
+  border: 2px solid var(--primary);
+  border-radius: var(--radius-sm);
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.detail-add-layaway:hover:not(:disabled) {
+  background: #f5f3ff;
+}
+.detail-add-layaway:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* Shared layaway badge */
+.layaway-badge {
+  display: inline-block;
+  background: #ede9fe;
+  color: #6d28d9;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding: 0.15rem 0.5rem;
+  border-radius: 100px;
+}
+
+/* Cart: layaway tag under item name */
+.cart-layaway-tag {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.35rem;
+  flex-wrap: wrap;
+}
+.cart-layaway-terms {
+  font-size: 0.8rem;
+  color: var(--text-light);
+}
+.cart-item-duenow {
+  display: block;
+  font-size: 0.7rem;
+  color: var(--text-light);
+  font-weight: 500;
+}
+
+/* Cart summary: layaway rows */
+.summary-row.layaway-balance {
+  color: var(--text-light);
+  font-size: 0.9rem;
+}
+.layaway-note {
+  font-size: 0.78rem;
+  color: var(--text-light);
+  margin: 0.5rem 0 0.75rem;
+  line-height: 1.4;
+}
+
+/* Checkout: layaway notes */
+.payment-layaway-note {
+  font-size: 0.82rem;
+  color: var(--text-light);
+  background: #f5f3ff;
+  border-radius: var(--radius-sm);
+  padding: 0.6rem 0.85rem;
+  margin-bottom: 1.5rem;
+}
+.order-preview-layaway {
+  color: #6d28d9;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+.order-preview-balance {
+  color: var(--text-light);
+  font-size: 0.85rem;
+}
+
+/* Admin orders: layaway tag + details */
+.admin-order-badges {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.admin-layaway-tag {
+  background: #ede9fe;
+  color: #6d28d9;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 0.2rem 0.5rem;
+  border-radius: 100px;
+}
+.admin-order-layaway {
+  color: #6d28d9;
+  font-size: 0.78rem;
+}
+.admin-order-paidnow {
+  color: var(--text-light);
+  font-weight: 500;
+  font-size: 0.85rem;
+}

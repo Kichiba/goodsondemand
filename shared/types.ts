@@ -45,12 +45,19 @@ export interface Product {
   updatedAt: AppTimestamp;
 }
 
+// How a cart item / order item is being paid for.
+export type PaymentMode = 'full' | 'layaway';
+
 export interface OrderItem {
   productId: string;
   productName: string;
   quantity: number;
-  price: number;
+  price: number;             // Full unit price of the item
   image?: string;            // First product image for display
+  paymentMode?: PaymentMode; // Defaults to 'full' when absent
+  paydayAmount?: number;     // Layaway: amount per payday (per unit)
+  months?: number;           // Layaway: number of months
+  amountDueNow?: number;     // What the customer pays now for this line
 }
 
 export interface Order {
@@ -58,7 +65,9 @@ export interface Order {
   items: OrderItem[];
   customerName: string;
   customerContact: string;   // Messenger name or phone number
-  totalAmount: number;
+  totalAmount: number;       // Full value of all items
+  amountDueNow?: number;     // What the customer pays up front (layaway pays first installment only)
+  hasLayaway?: boolean;      // True if any item is on layaway
   status: OrderStatus;
   paymentProof?: string;     // Screenshot URL (optional)
   notes?: string;
@@ -81,4 +90,7 @@ export interface CartItem {
   originalPrice?: number;    // Original price before sale (for display)
   quantity: number;
   image?: string;
+  paymentMode?: PaymentMode; // 'full' (default) or 'layaway'
+  paydayAmount?: number;     // Layaway: amount per payday (per unit)
+  months?: number;           // Layaway: number of months
 }

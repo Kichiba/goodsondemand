@@ -70,8 +70,25 @@ export default function ProductDetailPage() {
       originalPrice: product.salePrice ? product.price : undefined,
       quantity: 1,
       image: product.images[0] || undefined,
+      paymentMode: 'full',
     }, product.stock);
     showToast(`${product.name} added to cart`);
+  };
+
+  const handleAddLayaway = () => {
+    if (!product.layaway?.enabled) return;
+    addItem({
+      productId: product.id,
+      productName: product.name,
+      price: product.salePrice || product.price,
+      originalPrice: product.salePrice ? product.price : undefined,
+      quantity: 1,
+      image: product.images[0] || undefined,
+      paymentMode: 'layaway',
+      paydayAmount: product.layaway.amountPerPayday,
+      months: product.layaway.numberOfMonths,
+    }, product.stock);
+    showToast(`${product.name} added as layaway`);
   };
 
   const handleImageMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -178,6 +195,16 @@ export default function ProductDetailPage() {
           >
             {isOutOfStock ? 'Sold Out' : isMaxedOut ? `Max in Cart (${currentInCart})` : 'Add to Cart'}
           </button>
+
+          {product.layaway?.enabled && (
+            <button
+              className="detail-add-layaway"
+              onClick={handleAddLayaway}
+              disabled={isOutOfStock || isMaxedOut}
+            >
+              Add as Layaway &middot; {formatPrice(product.layaway.amountPerPayday)}/payday
+            </button>
+          )}
         </div>
       </div>
 

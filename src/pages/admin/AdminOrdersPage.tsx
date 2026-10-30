@@ -101,12 +101,15 @@ export default function AdminOrdersPage() {
                     <strong>{order.customerName}</strong>
                     <span className="admin-order-contact">{order.customerContact}</span>
                   </div>
-                  <span
-                    className="admin-status-badge"
-                    style={{ color: cfg.color, background: cfg.color + '20' }}
-                  >
-                    {cfg.label}
-                  </span>
+                  <div className="admin-order-badges">
+                    {order.hasLayaway && <span className="admin-layaway-tag">Layaway</span>}
+                    <span
+                      className="admin-status-badge"
+                      style={{ color: cfg.color, background: cfg.color + '20' }}
+                    >
+                      {cfg.label}
+                    </span>
+                  </div>
                 </div>
 
                 <div className="admin-order-items">
@@ -114,6 +117,11 @@ export default function AdminOrdersPage() {
                     <div key={i} className="admin-order-item">
                       <span>
                         {it.productName} x{it.quantity}
+                        {it.paymentMode === 'layaway' && (
+                          <span className="admin-order-layaway">
+                            {' '}· Layaway {formatPrice(it.paydayAmount || 0)}/payday × {it.months}mo
+                          </span>
+                        )}
                       </span>
                       <span>{formatPrice(it.price * it.quantity)}</span>
                     </div>
@@ -121,7 +129,14 @@ export default function AdminOrdersPage() {
                 </div>
 
                 <div className="admin-order-foot">
-                  <strong>Total: {formatPrice(order.totalAmount)}</strong>
+                  <strong>
+                    Total: {formatPrice(order.totalAmount)}
+                    {order.hasLayaway && order.amountDueNow != null && (
+                      <span className="admin-order-paidnow">
+                        {' '}(Paid now: {formatPrice(order.amountDueNow)})
+                      </span>
+                    )}
+                  </strong>
                   <div className="admin-order-btns">
                     {next && (
                       <button className="admin-primary-btn admin-sm" onClick={() => advance(order)}>
