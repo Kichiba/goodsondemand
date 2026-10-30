@@ -22,13 +22,15 @@ import {
   onAuthStateChanged,
   type User,
 } from 'firebase/auth';
-import { getApp } from 'firebase/app';
+import { initializeApp, getApps, getApp } from 'firebase/app';
 
-import { COLLECTIONS } from '@shared/firebase-config';
+import { firebaseConfig, COLLECTIONS } from '@shared/firebase-config';
 import type { Product, Order, OrderStatus } from '@shared/types';
 
-// Reuse the Firebase app already initialized in services/firebase.ts
-const app = getApp();
+// Reuse the existing Firebase app if one was already initialized
+// (e.g. by services/firebase.ts); otherwise initialize it here.
+// Using getApps() avoids a crash when this module loads before firebase.ts.
+const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
 export const db = getFirestore(app);
 export const auth = getAuth(app);
 

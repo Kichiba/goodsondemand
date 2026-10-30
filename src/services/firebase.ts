@@ -1,10 +1,10 @@
-import { initializeApp } from 'firebase/app';
+import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getFirestore, collection, getDocs, query, orderBy } from 'firebase/firestore';
 import { firebaseConfig, COLLECTIONS } from '@shared/firebase-config';
 import type { Product } from '@shared/types';
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
+// Initialize Firebase (reuse the app if it was already initialized elsewhere).
+const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
 export const db = getFirestore(app);
 
 // Fetch all available products
