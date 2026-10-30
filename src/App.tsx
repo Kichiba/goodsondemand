@@ -55,8 +55,9 @@ function AdminApp() {
   return (
     <AdminAuthProvider>
       <Routes>
-        <Route path="/admin" element={<AdminLayout />}>
-          <Route index element={<Navigate to="/admin/products" replace />} />
+        {/* Paths are relative to the parent "/admin/*" route. */}
+        <Route path="/" element={<AdminLayout />}>
+          <Route index element={<Navigate to="products" replace />} />
           <Route path="products" element={<AdminProductsPage />} />
           <Route path="orders" element={<AdminOrdersPage />} />
         </Route>
