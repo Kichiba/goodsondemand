@@ -41,7 +41,7 @@ export const CURRENCY = {
 // Calculate how long ago a product was purchased, based on an ISO date
 // (YYYY-MM-DD) up to today. Returns a human-readable string like
 // "3 months, 12 days" or null if the date is missing/invalid.
-export function calculateAgeing(datePurchased?: string): string | null {
+export function calculateAgeing(datePurchased?: string | null): string | null {
   if (!datePurchased) return null;
 
   const purchased = new Date(datePurchased);

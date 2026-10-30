@@ -15,6 +15,7 @@ export const firebaseConfig = {
 export const COLLECTIONS = {
   PRODUCTS: 'products',
   ORDERS: 'orders',
+  INVOICES: 'invoices',   // Public receipt docs (safe fields only, no contact)
   CATEGORIES: 'categories',
 } as const;
 

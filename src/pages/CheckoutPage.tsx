@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { formatPrice } from '@shared/constants';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../services/firebase';
 
 type PaymentMethodId = 'bpi' | 'gcash' | 'maribank' | 'gotyme';
@@ -47,14 +47,21 @@ export default function CheckoutPage() {
     // 1. Save order to Firestore so it shows in the inventory app
     let newOrderId = '';
     try {
-      const docRef = await addDoc(collection(db, 'orders'), {
-        items: items.map((item) => ({
-          productId: item.productId,
-          productName: item.productName,
-          quantity: item.quantity,
-          price: item.price,
-          image: item.image || null,
-        })),
+      // Pre-generate the ID so the private order and the public invoice share it.
+      const orderRef = doc(collection(db, 'orders'));
+      newOrderId = orderRef.id;
+
+      const orderItems = items.map((item) => ({
+        productId: item.productId,
+        productName: item.productName,
+        quantity: item.quantity,
+        price: item.price,
+        image: item.image || null,
+      }));
+
+      // Full order — contains customer contact. Admin-read-only via rules.
+      await setDoc(orderRef, {
+        items: orderItems,
         customerName: customerName.trim(),
         customerContact: customerContact.trim(),
         totalAmount,
@@ -62,8 +69,18 @@ export default function CheckoutPage() {
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
       });
-      newOrderId = docRef.id;
-      setOrderId(docRef.id);
+
+      // Public invoice — safe fields only, no contact number. Publicly readable
+      // so the customer can view their receipt without logging in.
+      await setDoc(doc(db, 'invoices', newOrderId), {
+        items: orderItems,
+        customerName: customerName.trim(),
+        totalAmount,
+        status: 'pending',
+        createdAt: serverTimestamp(),
+      });
+
+      setOrderId(newOrderId);
     } catch (err) {
       console.error('Failed to save order:', err);
     }

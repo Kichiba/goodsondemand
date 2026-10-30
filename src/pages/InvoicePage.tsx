@@ -8,7 +8,6 @@ interface OrderData {
   id: string;
   items: { productId: string; productName: string; quantity: number; price: number }[];
   customerName: string;
-  customerContact: string;
   totalAmount: number;
   status: string;
   createdAt: { seconds: number } | null;
@@ -23,7 +22,9 @@ export default function InvoicePage() {
     async function fetchOrder() {
       if (!id) return;
       try {
-        const docRef = doc(db, 'orders', id);
+        // Read from the public `invoices` collection (no customer contact),
+        // so the receipt works without login while orders stay private.
+        const docRef = doc(db, 'invoices', id);
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
           setOrder({ id: docSnap.id, ...docSnap.data() } as OrderData);
@@ -145,7 +146,6 @@ export default function InvoicePage() {
           <div>
             <p className="invoice-label">Bill To:</p>
             <p className="invoice-customer-name">{order.customerName}</p>
-            <p className="invoice-customer-contact">{order.customerContact}</p>
           </div>
           <div className="invoice-status-box">
             <span className={`invoice-status ${order.status}`}>

@@ -1,4 +1,4 @@
-import { HashRouter, Routes, Route } from 'react-router-dom';
+import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { CartProvider } from './context/CartContext';
 import { ToastProvider } from './components/Toast';
 import Navbar from './components/Navbar';
@@ -9,13 +9,17 @@ import ProductDetailPage from './pages/ProductDetailPage';
 import InvoicePage from './pages/InvoicePage';
 import CartPage from './pages/CartPage';
 import CheckoutPage from './pages/CheckoutPage';
+import { AdminAuthProvider } from './context/AdminAuthContext';
+import AdminLayout from './pages/admin/AdminLayout';
+import AdminProductsPage from './pages/admin/AdminProductsPage';
+import AdminOrdersPage from './pages/admin/AdminOrdersPage';
 import './App.css';
 
-function App() {
+// Customer-facing store, wrapped in the cart/toast providers and shared chrome.
+function StoreApp() {
   return (
     <CartProvider>
       <ToastProvider>
-      <HashRouter>
         <div className="app">
           <Navbar />
           <main className="main-content">
@@ -41,9 +45,36 @@ function App() {
           </footer>
           <BackToTop />
         </div>
-      </HashRouter>
       </ToastProvider>
     </CartProvider>
+  );
+}
+
+// Inventory manager admin, kept separate from the customer store chrome.
+function AdminApp() {
+  return (
+    <AdminAuthProvider>
+      <Routes>
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route index element={<Navigate to="/admin/products" replace />} />
+          <Route path="products" element={<AdminProductsPage />} />
+          <Route path="orders" element={<AdminOrdersPage />} />
+        </Route>
+      </Routes>
+    </AdminAuthProvider>
+  );
+}
+
+function App() {
+  return (
+    <HashRouter>
+      <Routes>
+        {/* Admin area — everything under /admin */}
+        <Route path="/admin/*" element={<AdminApp />} />
+        {/* Customer store — everything else */}
+        <Route path="/*" element={<StoreApp />} />
+      </Routes>
+    </HashRouter>
   );
 }
 
